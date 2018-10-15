@@ -52,12 +52,18 @@
   <build_depend>geometry_msgs</build_depend>
   <build_depend>roscpp</build_depend>
   <build_depend>sensor_msgs</build_depend>
+  <build_depend>euclidean_cluster</build_depend>
+  <build_depend>visualization_tools</build_depend>
   <build_export_depend>geometry_msgs</build_export_depend>
   <build_export_depend>roscpp</build_export_depend>
   <build_export_depend>sensor_msgs</build_export_depend>
+  <build_export_depend>euclidean_cluster</build_export_depend>
+  <build_export_depend>visualization_tools</build_export_depend>
   <exec_depend>geometry_msgs</exec_depend>
   <exec_depend>roscpp</exec_depend>
   <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>euclidean_cluster</exec_depend>
+  <exec_depend>visualization_tools</exec_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->

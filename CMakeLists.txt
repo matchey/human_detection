@@ -11,6 +11,9 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   roscpp
   sensor_msgs
+  pcl_ros
+  euclidean_cluster
+  visualization_tools
 )
 
 ## System dependencies are found with CMake's conventions
@@ -116,9 +119,11 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
+  include
   ${catkin_INCLUDE_DIRS}
 )
+
+SET(CMAKE_CXX_FLAGS "-std=c++11 -O2 -g -Wall ${CMAKE_CXX_FLAGS}")
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
@@ -134,6 +139,7 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/human_detection_node.cpp)
+add_executable(test_splitter src/test_splitter.cpp src/split_cluster.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -149,6 +155,7 @@ include_directories(
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
 # )
+target_link_libraries(test_splitter bounding_box_array ${catkin_LIBRARIES})
 
 #############
 ## Install ##
