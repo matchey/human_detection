@@ -28,6 +28,7 @@ namespace human_detection
 		void assign(const int&, IndicesClusters&);
 		void constructGrid(const int&, IndicesClusters&);
 		void divide(const int&, IndicesClusters&);
+		double dist(const geometry_msgs::Pose&) const;
 
 		PointCloudPtr pc;
 		PointCloudPtr dspoints;

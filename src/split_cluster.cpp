@@ -64,13 +64,17 @@ namespace human_detection
 
 		int rtn = 0; 
 
-		if(0.15 < bb.width() && bb.width() < 3.0 &&
-		   0.10 < bb.depth() && bb.depth() < 1.5 &&
-		   1.20 - height_velodyne < bb.head() && bb.head() < 1.9 - height_velodyne){
-
-			rtn = int(bb.width() / human_width + 0.6);
-
-			if(!rtn) rtn = 1;
+		// depthとwidthが人のサイズ
+		if(0.15 < bb.width() && bb.width() < 3.0 && 0.10 < bb.depth() && bb.depth() < 1.5){
+			// BoundingBoxの最高点が人の頭の位置
+			if(1.20 - height_velodyne < bb.head() && bb.head() < 1.9 - height_velodyne){
+				// 遠くにいる時 BoundingBoxの高さ(最高点 - 最下点)が人の身長でない
+				if( (2.0 < dist(bb.pose())) && !(1.20 < bb.height() && bb.height() < 1.9) ){
+					rtn = 0;
+				}else{
+					rtn = std::max(int(bb.width() / human_width + 0.6), 1);
+				}
+			}
 		}
 
 		return rtn;
@@ -173,5 +177,12 @@ namespace human_detection
 		}
 		clusters = dived;
 	}
+
+	template<typename PointT>
+	double Splitter<PointT>::dist(const geometry_msgs::Pose& pos) const
+	{
+		return sqrt(pow(pos.position.x, 2) + pow(pos.position.y, 2) + pow(pos.position.z, 2));
+	}
+
 } // namespace human_detection
 

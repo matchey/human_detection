@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<launch>
+	<arg name="topic" default="/rm_ground" />
+	
+	<node pkg="euclidean_cluster" type="test_euclidean_cluster" name="test_euclidean_cluster" >
+		<param name="topic_name_sub" value="$(arg topic)" />
+	</node>
+
+	<node pkg="human_detection" type="test_splitter" name="test_splitter" />
+
+	<node pkg="human_detection" type="pos_publisher" name="pos_publisher" output="screen" />
+
+</launch>

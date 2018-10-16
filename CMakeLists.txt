@@ -140,6 +140,7 @@ SET(CMAKE_CXX_FLAGS "-std=c++11 -O2 -g -Wall ${CMAKE_CXX_FLAGS}")
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/human_detection_node.cpp)
 add_executable(test_splitter src/test_splitter.cpp src/split_cluster.cpp)
+add_executable(pos_publisher src/pos_publisher.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -156,6 +157,7 @@ add_executable(test_splitter src/test_splitter.cpp src/split_cluster.cpp)
 #   ${catkin_LIBRARIES}
 # )
 target_link_libraries(test_splitter bounding_box_array ${catkin_LIBRARIES})
+target_link_libraries(pos_publisher ${catkin_LIBRARIES})
 
 #############
 ## Install ##
