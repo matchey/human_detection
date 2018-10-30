@@ -6,7 +6,7 @@
 		<param name="topic_name_sub" value="$(arg topic)" />
 	</node>
 
-	<node pkg="human_detection" type="test_splitter" name="test_splitter" />
+	<node pkg="human_detection" type="test_splitter" name="test_splitter" output="screen" />
 
 	<node pkg="human_detection" type="pos_publisher" name="pos_publisher" output="screen" />
 

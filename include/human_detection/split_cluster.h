@@ -25,15 +25,17 @@ namespace human_detection
 
 		private:
 		int toDivide() const;
-		void assign(const int&, IndicesClusters&);
-		void constructGrid(const int&, IndicesClusters&);
+		void assign(int&, IndicesClusters&);
+		void constructGrid(int&);
 		void divide(const int&, IndicesClusters&);
+		void calcCentroid(const PointCloudPtr&);
 		double dist(const geometry_msgs::Pose&) const;
 
 		PointCloudPtr pc;
 		PointCloudPtr dspoints;
 		visualization_tools::BoundingBoxArray bba;
 		visualization_tools::BoundingBox bb;
+		PointT centroid;
 
 		// for grid
 		Eigen::Affine3d toOrigin;

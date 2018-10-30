@@ -8,6 +8,7 @@ namespace human_detection
 	Splitter<PointT>::Splitter()
 	: pc(new PointCloud), dspoints(new PointCloud), grid_dim(7)
 	{
+		// default constructor
 	}
 
 	template<typename PointT>
@@ -30,16 +31,17 @@ namespace human_detection
 			bb.fromPCL(pc);
 			IndicesClusters clusters;
 			clusters.push_back(it);
-			int nhumans = toDivide();
+			int nhumans = toDivide(); // via (const) bb
+			if(nhumans == 2) calcCentroid(pc);
 			assign(nhumans, clusters);
 			for(const auto& dived : clusters){
 				pc->points.clear();
 				for(const auto& pit : dived.indices){
 					pc->points.push_back(dspoints->points[pit]);
 				}
-				ic_dived.push_back(dived);
-				bb.fromPCL(pc);
-				if(0 < nhumans){
+				if(nhumans != 1) bb.fromPCL(pc);
+				if(toDivide() == 1){
+					ic_dived.push_back(dived);
 					bba.push_back(bb);
 				}
 			}
@@ -50,9 +52,7 @@ namespace human_detection
 	template<typename PointT>
 	void Splitter<PointT>::publish() const
 	{
-		if(bba.size()){
-			bba.publish();
-		}
+		bba.publish();
 	}
 
 	// private
@@ -72,7 +72,7 @@ namespace human_detection
 				if( (2.0 < dist(bb.pose())) && !(1.20 < bb.height() && bb.height() < 1.9) ){
 					rtn = 0;
 				}else{
-					rtn = std::max(int(bb.width() / human_width + 0.6), 1);
+					rtn = std::max(int(bb.width() / human_width + 0.50), 1);
 				}
 			}
 		}
@@ -81,7 +81,7 @@ namespace human_detection
 	}
 
 	template<typename PointT>
-	void Splitter<PointT>::assign(const int& nhumans, IndicesClusters& clusters)
+	void Splitter<PointT>::assign(int& nhumans, IndicesClusters& clusters)
 	{
 		if(nhumans == 1){
 			return;
@@ -92,12 +92,12 @@ namespace human_detection
 			return;
 		}
 
-		constructGrid(nhumans, clusters);
+		constructGrid(nhumans); // set vert_div
 		divide(nhumans, clusters);
 	}
 
 	template<typename PointT>
-	void Splitter<PointT>::constructGrid(const int& nhumans, IndicesClusters& clusters)
+	void Splitter<PointT>::constructGrid(int& nhumans)
 	{
 		dim_horz = grid_dim * nhumans;
 		dim_vert = grid_dim;
@@ -127,16 +127,25 @@ namespace human_detection
 			}
 		}
 
+		int begin;
+		if(nhumans == 2){
+			Eigen::Vector3d p(centroid.x, centroid.y, centroid.z);
+			p = toOrigin * p;
+			begin = ((dim_horz/2.0) + p.y() / size_horz);
+		}else{
+			begin = grid_dim;
+		}
+
 		vert_div.clear();
 		for(int i = 1; i < nhumans; ++i){
-			int begin = i*grid_dim - 2;
+			begin = nhumans == 2 ? begin - 2 : i*grid_dim - 2;
 			int end = begin + 3;
 			int max = 0;
 			int div = begin;
 			for(int horz = begin; horz < end; ++horz){
 				int cnt = 0;
 				for(int vert = 0; vert < grid_dim; ++vert){
-					if(2 < pcount[horz][vert]){
+					if(pcount[horz][vert] == 0){
 						++cnt;
 					}
 				}
@@ -145,17 +154,23 @@ namespace human_detection
 					div = horz;
 				}
 			}
-			vert_div.push_back(div);
+			// if(3 < max || 1.3 < bb.width())
+			if(3 < max){ // 2つになるよりは1個になっちゃうほうがまし
+				vert_div.push_back(div);
+			}
 		}
+		nhumans = vert_div.size() + 1;
 	}
 
 	template<typename PointT>
 	void Splitter<PointT>::divide(const int& nhumans, IndicesClusters& clusters)
 	{
+		if(nhumans == 1) return;
+
 		IndicesClusters dived;
 
 		dived.resize(nhumans); // vert_div.size() = nhumans
-		
+
 		for(const auto& id : clusters[0].indices){
 			Eigen::Vector3d p(dspoints->points[id].x,
 					  	 	  dspoints->points[id].y, dspoints->points[id].z);
@@ -176,6 +191,26 @@ namespace human_detection
 			}
 		}
 		clusters = dived;
+	}
+
+	template<typename PointT>
+	void Splitter<PointT>::calcCentroid(const PointCloudPtr& pc)
+	{
+		int n = pc->points.size();
+
+		if(!n) return;
+
+		Eigen::Vector3d sum(0.0, 0.0, 0.0);
+
+		for(int i = 0; i < n; ++i){
+			sum.x() += pc->points[i].x;
+			sum.y() += pc->points[i].y;
+			sum.z() += pc->points[i].z;
+		}
+
+		centroid.x = sum.x() / n;
+		centroid.y = sum.y() / n;
+		centroid.z = sum.z() / n;
 	}
 
 	template<typename PointT>

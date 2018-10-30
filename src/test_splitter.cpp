@@ -5,6 +5,7 @@
 #include <message_filters/sync_policies/exact_time.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <pcl_conversions/pcl_conversions.h>
+// #include <boost/thread.hpp>
 #include "euclidean_cluster/indices.h"
 #include "human_detection/split_cluster.h"
 
@@ -41,6 +42,8 @@ class ClusterPublisher
 	std::vector<pcl::PointIndices> cluster_indices;
 	PointCloudPtr dspoints;
 	PointCloudPtr cpoints;
+
+	boost::mutex pt_mutex;
 };
 
 ClusterPublisher::ClusterPublisher()
@@ -55,12 +58,13 @@ ClusterPublisher::ClusterPublisher()
 }
 
 void ClusterPublisher::callback(const euclidean_cluster::IndicesClusters::ConstPtr& ic,
-							    const sensor_msgs::PointCloud2::ConstPtr& pc)
+							    const sensor_msgs::PointCloud2::ConstPtr& pc2)
 {
+	boost::mutex::scoped_lock(pt_mutex);
 	cluster_indices.clear();
 	euclidean_cluster::toPCL(*ic, cluster_indices);
 
-	pcl::fromROSMsg(*pc, *dspoints);
+	pcl::fromROSMsg(*pc2, *dspoints);
 
 	publish();
 }
