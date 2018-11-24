@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <launch>
-	<arg name="topic" default="/rm_ground" />
+	<arg name="topic" default="/velodyne_obstacles" />
 	
 	<node pkg="euclidean_cluster" type="test_euclidean_cluster" name="test_euclidean_cluster" >
 		<param name="topic_name_sub" value="$(arg topic)" />
