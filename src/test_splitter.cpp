@@ -47,7 +47,7 @@ class ClusterPublisher
 };
 
 ClusterPublisher::ClusterPublisher()
-	: topic_sub_id("/cluster/indices"), topic_sub_pc("/rm_ground/downsampled"),
+	: topic_sub_id("/cluster/indices"), topic_sub_pc("/velodyne_obstacles/downsampled"),
 	  id_sub(n, topic_sub_id, 1), pc_sub(n, topic_sub_pc, 1), 
 	  sync(SyncPolicy(10), id_sub, pc_sub),
 	  dspoints(new PointCloud), cpoints(new PointCloud)
