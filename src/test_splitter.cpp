@@ -26,6 +26,14 @@ class ClusterPublisher
 				  const sensor_msgs::PointCloud2::ConstPtr&);
 	void publish();
 
+	static std::string setParams(std::string pname)
+	{
+		std::string rtn;
+		ros::param::param<std::string>(pname, rtn, "/velodyne_obstacles");
+
+		return rtn;
+	}
+
 	std::string topic_sub_id;
 	std::string topic_sub_pc;
 
@@ -47,7 +55,7 @@ class ClusterPublisher
 };
 
 ClusterPublisher::ClusterPublisher()
-	: topic_sub_id("/cluster/indices"), topic_sub_pc("/velodyne_obstacles/downsampled"),
+	: topic_sub_id("/cluster/indices"), topic_sub_pc(setParams("topic_name_sub") + "/downsampled"),
 	  id_sub(n, topic_sub_id, 1), pc_sub(n, topic_sub_pc, 1), 
 	  sync(SyncPolicy(10), id_sub, pc_sub),
 	  dspoints(new PointCloud), cpoints(new PointCloud)
@@ -55,6 +63,10 @@ ClusterPublisher::ClusterPublisher()
 	sync.registerCallback(boost::bind(&ClusterPublisher::callback, this, _1, _2));
 
 	pub = n.advertise<euclidean_cluster::IndicesClusters>(topic_sub_id+"/split", 1);
+
+	double height;
+	n.param<double>("height_lidar", height, 1.3);
+	spliter.setLidarHeight(height);
 }
 
 void ClusterPublisher::callback(const euclidean_cluster::IndicesClusters::ConstPtr& ic,

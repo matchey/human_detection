@@ -20,6 +20,7 @@ namespace human_detection
 		// typedef typename PointCloud::ConstPtr PointCloudConstPtr;
 
 		Splitter();
+		void setLidarHeight(const double&);
 		void split(IndicesClusters&, const PointCloudPtr&);
 		void publish() const; // for debug
 
@@ -36,6 +37,8 @@ namespace human_detection
 		visualization_tools::BoundingBoxArray bba;
 		visualization_tools::BoundingBox bb;
 		PointT centroid;
+
+		double height_velodyne;
 
 		// for grid
 		Eigen::Affine3d toOrigin;

@@ -6,9 +6,15 @@ namespace human_detection
 {
 	template<typename PointT>
 	Splitter<PointT>::Splitter()
-	: pc(new PointCloud), dspoints(new PointCloud), grid_dim(7)
+	: pc(new PointCloud), dspoints(new PointCloud), height_velodyne(1.3), grid_dim(7)
 	{
 		// default constructor
+	}
+
+	template<typename PointT>
+	void Splitter<PointT>::setLidarHeight(const double& height)
+	{
+		height_velodyne = height;
 	}
 
 	template<typename PointT>
@@ -60,7 +66,7 @@ namespace human_detection
 	int Splitter<PointT>::toDivide() const
 	{
 		const double human_width = 0.7;
-		const double height_velodyne = 1.3;
+		// const double height_velodyne = 1.3;
 
 		int rtn = 0; 
 

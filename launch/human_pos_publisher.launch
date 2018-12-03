@@ -1,10 +1,19 @@
 <?xml version="1.0"?>
 <launch>
 	<arg name="topic" default="/velodyne_obstacles" />
+	<arg name="height" default="1.3" />
 	
 	<node pkg="euclidean_cluster" type="test_euclidean_cluster" name="test_euclidean_cluster" >
 		<param name="topic_name_sub" value="$(arg topic)" />
+
+		<!-- <param name="leafsize" value="0.03" /> -->
+		<!-- <param name="tolerance" value="0.3" /> -->
+		<!-- <param name="min_cluster_size" value="10" /> -->
+		<!-- <param name="max_cluster_size" value="2000" /> -->
 	</node>
+
+	<param name="topic_name_sub" value="$(arg topic)" />
+	<param name="height_lidar" value="$(arg height)" />
 
 	<node pkg="human_detection" type="test_splitter" name="test_splitter" output="screen" />
 

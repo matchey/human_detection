@@ -27,6 +27,14 @@ class HumanPosPublisher
 	void setPosition();
 	void calcCentroid(const PointCloudPtr&, PointT&) const;
 
+	static std::string setParams(std::string pname)
+	{
+		std::string rtn;
+		ros::param::param<std::string>(pname, rtn, "/velodyne_obstacles");
+
+		return rtn;
+	}
+
 	std::string topic_sub_id;
 	std::string topic_sub_pc;
 
@@ -46,7 +54,8 @@ class HumanPosPublisher
 };
 
 HumanPosPublisher::HumanPosPublisher()
-	: topic_sub_id("/cluster/indices/split"), topic_sub_pc("/velodyne_obstacles/downsampled"),
+	: topic_sub_id("/cluster/indices/split"),
+	  topic_sub_pc(setParams("topic_name_sub") + "/downsampled"),
 	  id_sub(n, topic_sub_id, 1), pc_sub(n, topic_sub_pc, 1), 
 	  sync(SyncPolicy(10), id_sub, pc_sub),
 	  dspoints(new PointCloud), pc_human(new PointCloud),
